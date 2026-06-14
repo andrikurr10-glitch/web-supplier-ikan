@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import './App.css';
 
 function App() {
   const [ikan, setIkan] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Ini link API SheetDB lo bro!
   const API_URL = 'https://sheetdb.io/api/v1/mlfz44whmxwot';
 
   useEffect(() => {
@@ -14,30 +14,43 @@ function App() {
         setIkan(response.data);
         setLoading(false);
       })
-      .catch((error) => console.error("Waduh, error bro: ", error));
+      .catch((error) => console.error("Error: ", error));
   }, []);
 
+  const handleWhatsApp = (item) => {
+    const message = `Halo! Saya mau pesan ${item.nama_ikan} - ${item.stok} Kg @ Rp ${item.harga}/Kg`;
+    window.open(`https://wa.me/6287801087313?text=${encodeURIComponent(message)}`);
+  };
+
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>Katalog Ikan Segar 🐟</h1>
-      
-      {loading ? (
-        <p>Loading narik jaring...</p>
-      ) : (
-        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-          {ikan.map((item) => (
-            <div key={item.id} style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '8px', width: '200px' }}>
-              <h3>{item.nama_ikan}</h3>
-              <p>Kategori: {item.kategori}</p>
-              <p>Harga: Rp {item.harga} / Kg</p>
-              <p>Stok: {item.stok} Kg</p>
-              <button style={{ background: '#25D366', color: 'white', border: 'none', padding: '10px', borderRadius: '5px', cursor: 'pointer' }}>
-                Beli via WA
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="app">
+      <header className="header">
+        <h1>🐟 Katalog Ikan Segar</h1>
+        <p>Supplier Ikan Terpercaya</p>
+      </header>
+
+      <div className="container">
+        {loading ? (
+          <p className="loading">⏳ Loading narik jaring...</p>
+        ) : (
+          <div className="product-grid">
+            {ikan.map((item) => (
+              <div key={item.id} className="product-card">
+                <h3>{item.nama_ikan}</h3>
+                <p><strong>Kategori:</strong> {item.kategori || '-'}</p>
+                <p className="price">Harga: <strong>Rp {item.harga?.toLocaleString('id-ID')} / Kg</strong></p>
+                <p>Stok: {item.stok} Kg</p>
+                <button 
+                  className="btn-wa" 
+                  onClick={() => handleWhatsApp(item)}
+                >
+                  💬 Beli via WA
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
